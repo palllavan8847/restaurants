@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Restaurants Page</title>
+	<link href="/static/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/static/css/restaurant.css" rel="stylesheet">
+	<script src="/static/js/jquery-3.4.1.min.js"></script>   
+	<script src="/static/js/bootstrap.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			
+			function getjsondata($form){
+			    var unindexed_array = $form.serializeArray();
+			    var indexed_array = {};
+			    $.map(unindexed_array, function(n, i){
+			        indexed_array[n['name']] = n['value'];
+			    });
+			    return indexed_array;
+			}
+			
+			$('body').on('click', '.btn-search', function(){
+				var search_text = $('#search').val()
+				if (search_text.trim() == ""){
+					alert("Please enter search text"); return
+				}
+				window.location = "/search_restaurants/?search="+search_text
+			})
+			
+			$('body').on('click', '.btn-filter', function(){
+				var cuisines_text = $('#cuisines').val()
+				if (cuisines_text.trim() == ""){
+					alert("Please enter search text"); return
+				}
+				window.location = "/search_cuisines/?search="+cuisines_text
+			});
+			
+			
+			$('body').on('click', '.btn-sort', function(){
+				var sort_text = $('#multi_sort').val()
+				if (sort_text == ""){
+					alert("Please enter search text"); return
+				}
+				$.ajax({
+					url : '/api/v1/user/api_sorting/',
+					type: "POST",
+					data: JSON.stringify({'sort': sort_text}),
+					contentType: 'application/json',
+					success: function(data){
+						var success_data = data.success;
+						if (success_data){
+							$('.dynamic_tr').remove();
+							var static_html = ''
+							var data_val = success_data.all_restaurants
+							$.each(data_val, function(key, value){
+								static_html = static_html + '<tr><td>"'+value.restaurant.replace('"', '')+'"</td>\
+													<td>"'+value.restaurant_name.replace('"', '')+'"</td>\
+													<td>"'+value.cuisines.replace('"', '')+'"</td>\
+													<td>"'+value.currency.replace('"', '')+'"</td>\
+													<td>"'+value.aggregate_rating.replace('"', '')+'"</td>\
+													<td>"'+value.rating_text.replace('"', '')+'"</td>\
+													<td>"'+value.votes.replace('"', '')+'"</td></tr>'
+							});
+							$('#dev-table').append(static_html);
+						}
+					},
+					error: function(data){
+						alert(data.responseJSON.error_message)
+					}
+				})
+			})
+			
+		});
+	</script>
+</head>
+<body>
+<div class="container">
+	<div class="row">
+		<section class="content">
+			<h1>Search Restaurant</h1>
+			<div class="col-md-8 col-md-offset-2" style="max-width:None !important">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div class="pull-right">
+							<div class="btn-group">
+									&nbsp;&nbsp;
+									<input type="text" class="form-control" placeholder="search" id="search" >&nbsp;
+									<button type="button" class="btn btn-success btn-search">Search</button>&nbsp;&nbsp;&nbsp;
+								
+									<input type="text" class="form-control" placeholder="comma seperated cuisines" id="cuisines">&nbsp;
+									<button type="button" class="btn btn-success btn-filter">Filter</button>&nbsp;&nbsp;&nbsp;
+								
+							</div>
+							<div class="btn-group">
+								<select name="sort" id="multi_sort" multiple>
+								  <option value="-rating_text">rating</option>
+								  <option value="-votes">votes</option>
+								  <option value="-average_cost_for_two">average cost of two</option>
+								</select> &nbsp;
+									<button type="button" class="btn btn-success btn-sort">Sorting</button>
+							</div>
+						</div>
+						<div class="table-container">
+							<table class="table table-hover" id="dev-table">
+								<tr><th>Restaurant ID</th><th>Restaurant Name</th><th>Cuisines</th><th>Currency</th>
+								<th>Rating</th><th>Rating text</th><th>Votes</th></tr>
+								{% for value in all_restaurants %}
+									<tr class="dynamic_tr">
+									<td>{{value.restaurant}}</td>
+									<td>{{value.restaurant_name}}</td>
+									<td>{{value.cuisines}}</td>
+									<td>{{value.currency}}</td>
+									<td>{{value.aggregate_rating}}</td>
+									<td>{{value.rating_text}}</td>
+									<td>{{value.votes}}</td>
+									</tr>
+								{% endfor %}	
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+</body>
+</html>

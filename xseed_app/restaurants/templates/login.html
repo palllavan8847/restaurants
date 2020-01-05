@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="restaurants">
+    <meta name="author" content="restaurants">
+    <title>Browse Restaurants</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/main.css" rel="stylesheet">
+    <script src="/static/js/jquery-3.4.1.min.js"></script>
+  </head>
+  <body class="text-center">
+    <form class="form-signin" action='.' method="POST" name="signin">
+    	{% csrf_token %}
+    	{% if message %}<h1>{{message}}</h1>{% endif %}
+      <h1 class="h3 mb-3 font-weight-normal">Sign In</h1>
+      <label for="inputEmail" class="sr-only">Email address</label>
+      <input type="email" id="inputEmail" name="username" class="form-control" placeholder="Email address" required autofocus>
+      <label for="inputPassword" class="sr-only">Password</label>
+      <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required>
+      <button class="btn btn-lg btn-primary btn-block" id = "submit_login" type="submit">Sign in</button>
+    </form>
+  </body>
+</html>
